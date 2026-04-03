@@ -42,6 +42,7 @@ type CustomerStore = {
   setCustomers: (customers: Customer[]) => void
   addNote: (customerId: number, noteContent: string, author?: string, isImportant?: boolean) => void
   addInteraction: (customerId: number, type: InteractionType, summary: string, author?: string) => void
+  addCustomer: (data: Partial<Customer>) => void
 }
 
 const initialCustomersData: Customer[] = [
@@ -168,5 +169,27 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
         }
         return c
       })
-    }))
+    })),
+  addCustomer: (data) =>
+    set((state) => {
+      const newId = Math.max(...state.customers.map(c => c.id), 0) + 1;
+      const newCustomer: Customer = {
+        id: newId,
+        firstName: data.firstName || '',
+        lastName: data.lastName || '',
+        company: data.company || '',
+        email: data.email || '',
+        phone: data.phone || '',
+        status: data.status || 'LEAD',
+        assignedUserId: 1,
+        location: 'Unknown Location',
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent((data.firstName || '') + ' ' + (data.lastName || ''))}&background=random`,
+        lastContact: 'Just now',
+        lifetimeValue: '$0',
+        notes: [],
+        interactions: [],
+        ...data,
+      }
+      return { customers: [newCustomer, ...state.customers] }
+    })
 }))
