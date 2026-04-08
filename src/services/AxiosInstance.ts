@@ -1,53 +1,64 @@
-import axios, { type AxiosError, type AxiosInstance, type InternalAxiosRequestConfig, type AxiosResponse } from 'axios';
 
-// Create a configured Axios instance
-const axiosInstance: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api', // Default fallback URL
-  timeout: 10000,
+import type { ApiResponse } from '@/schema/api';
+import axios from 'axios'
+// define axiosInstance reuse for all api
+const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/crm-system/api',
+  timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
   },
-});
+})
 
-// Request Interceptor: Attach token if it exists
+// Interceptor grant token if request authentication
 axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    // Check if token exists in localStorage or your store
-    const token = localStorage.getItem('access_token');
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+  (config) => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
     }
-    return config;
+    return config
   },
-  (error: AxiosError) => {
-    return Promise.reject(error);
+  (error) => {
+    return Promise.reject(error)
   }
-);
-
-// Response Interceptor: Handle common errors
+)
+//
 axiosInstance.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response;
-  },
-  (error: AxiosError) => {
-    if (error.response) {
-      // Handle 401 Unauthorized
-      if (error.response.status === 401) {
-        // e.g., redirect to login or refresh token
-        console.warn('Unauthorized! Redirecting to login...');
-        // Optionally clear token
-        // localStorage.removeItem('access_token');
-        // window.location.href = '/login';
-      }
-    } else if (error.request) {
-      // The request was made but no response was received
-      console.error('No response received:', error.request);
-    } else {
-      // Something happened in setting up the request
-      console.error('Request setup error:', error.message);
-    }
-    return Promise.reject(error);
-  }
-);
+  (response) => {
+    const apiResponse = response.data as ApiResponse<any>
 
-export default axiosInstance;
+    const isSuccess = apiResponse.code >= 200 && apiResponse.code < 300
+
+    if (isSuccess) {
+      return apiResponse.data
+    } else {
+      return Promise.reject({
+        isApiError: true,
+        code: apiResponse.code,
+        message: apiResponse.message,
+      })
+    }
+  },
+
+  (error) => {
+    if (error.response) {
+      switch (error.response.status) {
+        case 401:
+          console.warn('Unauthorized! Redirecting to login...')
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('user')
+          break
+      }
+    }
+
+    const errorResponse = {
+      isApiError: true,
+      code: error.response?.status || 500,
+      message:
+        error.response?.data?.message || error.message || 'Đã có lỗi xảy ra.',
+    }
+    return Promise.reject(errorResponse)
+  }
+)
+export default axiosInstance
