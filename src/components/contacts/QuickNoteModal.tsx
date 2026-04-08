@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { X, MessageSquarePlus } from 'lucide-react'
-import { useCustomerStore } from '../../store/useCustomerStore'
+import { X, MessageSquarePlus, Loader2 } from 'lucide-react'
+import { create_new_note } from '@/services/api/note.service'
+import { useAuthStore } from '../../store/useAuthStore'
+import { toast } from 'sonner'
 
 interface QuickNoteModalProps {
   customerId: number
@@ -10,15 +12,34 @@ interface QuickNoteModalProps {
 export function QuickNoteModal({ customerId, onClose }: QuickNoteModalProps) {
   const [quickNoteText, setQuickNoteText] = useState('')
   const [isImportant, setIsImportant] = useState(false)
-  const addNote = useCustomerStore((state) => state.addNote)
+  const [isLoading, setIsLoading] = useState(false)
+  const user = useAuthStore((state) => state.user)
 
-  const handleQuickAddNote = (e: React.FormEvent) => {
+  const handleQuickAddNote = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!quickNoteText.trim()) return
+    if (!user) {
+      toast.error("You must be logged in to add notes")
+      return
+    }
 
-    addNote(customerId, quickNoteText.trim(), 'Nguyễn Quang Minh', isImportant)
-    setQuickNoteText('')
-    onClose()
+    setIsLoading(true)
+    try {
+      await create_new_note({
+        customerId,
+        userId: user.id,
+        content: quickNoteText.trim(),
+        isImportant,
+      })
+      toast.success("Note saved successfully")
+      setQuickNoteText('')
+      onClose()
+    } catch (error) {
+      console.error("Failed to save note:", error);
+      toast.error("Failed to save note")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -48,6 +69,7 @@ export function QuickNoteModal({ customerId, onClose }: QuickNoteModalProps) {
               placeholder="Type your note here..."
               className="w-full text-foreground min-h-[120px] p-4 rounded-xl bg-secondary/50 border border-transparent focus:border-primary/20 outline-none focus:bg-background focus:ring-2 focus:ring-primary/20 transition-all resize-none text-sm"
               autoFocus
+              disabled={isLoading}
             />
             <div className="flex justify-between items-center pt-2">
               <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer ml-1">
@@ -56,6 +78,7 @@ export function QuickNoteModal({ customerId, onClose }: QuickNoteModalProps) {
                   checked={isImportant}
                   onChange={(e) => setIsImportant(e.target.checked)}
                   className="rounded border-gray-300 text-amber-500 focus:ring-amber-500 h-4 w-4"
+                  disabled={isLoading}
                 />
                 Mark as important
               </label>
@@ -64,14 +87,16 @@ export function QuickNoteModal({ customerId, onClose }: QuickNoteModalProps) {
                   type="button"
                   onClick={onClose}
                   className="px-4 py-2 bg-secondary text-secondary-foreground rounded-xl flex items-center justify-center hover:bg-secondary/80 transition-colors text-sm font-medium"
+                  disabled={isLoading}
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
-                  disabled={!quickNoteText.trim()}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-xl flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors shadow-sm text-sm font-medium"
+                  disabled={!quickNoteText.trim() || isLoading}
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors shadow-sm text-sm font-medium"
                 >
+                  {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                   Save Note
                 </button>
               </div>
@@ -82,3 +107,4 @@ export function QuickNoteModal({ customerId, onClose }: QuickNoteModalProps) {
     </div>
   )
 }
+
