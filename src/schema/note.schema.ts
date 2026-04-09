@@ -7,7 +7,7 @@ export const NoteResponseSchema = z.object({
     userId: z.number(),
     userName: z.string(),
     content: z.string(),
-    isImportant: z.boolean(),
+    important: z.boolean(),
     createdAt: z.string(),
 });
 

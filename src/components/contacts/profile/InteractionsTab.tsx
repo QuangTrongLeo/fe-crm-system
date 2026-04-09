@@ -8,7 +8,7 @@ import { useInteractionStore } from "@/store/useInteractionStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
 import type { InteractionResponseFormData } from "@/schema/interaction.schema";
-import { InteractionListItem } from "./InteractionListItem";
+import { InteractionItem } from "./InteractionItem";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -43,7 +43,6 @@ export function InteractionsTab({ customerId }: InteractionsTabProps) {
       setInteractions(res || []);
     } catch (error) {
       console.error("Failed to fetch interactions:", error);
-      toast.error("Failed to load interactions");
     } finally {
       setIsLoading(false);
     }
@@ -144,10 +143,7 @@ export function InteractionsTab({ customerId }: InteractionsTabProps) {
           </div>
         ) : (
           interactions.map((interaction: InteractionResponseFormData) => (
-            <InteractionListItem
-              key={interaction.id}
-              interaction={interaction}
-            />
+            <InteractionItem key={interaction.id} interaction={interaction} />
           ))
         )}
       </div>
