@@ -6,7 +6,7 @@ import { useAuthStore } from '@/store/useAuthStore'
 import { toast } from 'sonner'
 import type { NoteResponseFormData } from '@/schema/note.schema'
 import { cn } from '@/lib/utils'
-import { NoteListItem } from './NoteListItem'
+import { NoteItem } from './NoteLItem'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 
@@ -53,12 +53,14 @@ export function NotesTab({ customerId }: NotesTabProps) {
 
     setIsCreating(true)
     try {
-      await create_new_note({
+      const req = {
         customerId: customerId,
         userId: user.id,
         content: noteContent,
-        isImportant: isImportant
-      })
+        isImportant: isImportant,
+      };
+      console.log(req);
+      await create_new_note(req)
       setNoteContent('')
       setIsImportant(false)
       toast.success('Note added successfully')
@@ -122,7 +124,7 @@ export function NotesTab({ customerId }: NotesTabProps) {
           </div>
         ) : (
           notes.map((note: NoteResponseFormData) => (
-            <NoteListItem key={note.id} note={note} />
+            <NoteItem key={note.id} note={note} />
           ))
         )}
       </div>
