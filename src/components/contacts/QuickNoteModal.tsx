@@ -1,51 +1,55 @@
-import { useState } from 'react'
-import { X, MessageSquarePlus, Loader2 } from 'lucide-react'
-import { create_new_note } from '@/services/api/note.service'
-import { useAuthStore } from '../../store/useAuthStore'
-import { toast } from 'sonner'
+import { useState } from "react";
+import { X, MessageSquarePlus, Loader2 } from "lucide-react";
+import { create_new_note } from "@/services/api/note.service";
+import { useAuthStore } from "../../store/useAuthStore";
+import { toast } from "sonner";
+import { Button } from "../ui/button";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
 
 interface QuickNoteModalProps {
-  customerId: number
-  onClose: () => void
+  customerId: number;
+  onClose: () => void;
 }
 
 export function QuickNoteModal({ customerId, onClose }: QuickNoteModalProps) {
-  const [quickNoteText, setQuickNoteText] = useState('')
-  const [isImportant, setIsImportant] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const user = useAuthStore((state) => state.user)
+  const [quickNoteText, setQuickNoteText] = useState("");
+  const [isImportant, setIsImportant] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const user = useAuthStore((state) => state.user);
 
   const handleQuickAddNote = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!quickNoteText.trim()) return
+    e.preventDefault();
+    if (!quickNoteText.trim()) return;
     if (!user) {
-      toast.error("You must be logged in to add notes")
-      return
+      toast.error("You must be logged in to add notes");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       await create_new_note({
         customerId,
         userId: user.id,
         content: quickNoteText.trim(),
         isImportant,
-      })
-      toast.success("Note saved successfully")
-      setQuickNoteText('')
-      onClose()
+      });
+      toast.success("Note saved successfully");
+      setQuickNoteText("");
+      onClose();
     } catch (error) {
       console.error("Failed to save note:", error);
-      toast.error("Failed to save note")
+      toast.error("Failed to save note");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div 
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" 
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
       <div className="relative w-full max-w-md bg-card rounded-2xl shadow-xl border overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -54,16 +58,16 @@ export function QuickNoteModal({ customerId, onClose }: QuickNoteModalProps) {
             <MessageSquarePlus className="w-5 h-5 text-primary" />
             Add Quick Note
           </h3>
-          <button 
+          <Button
             onClick={onClose}
             className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors"
           >
             <X className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
         <div className="p-4">
           <form onSubmit={handleQuickAddNote} className="space-y-4">
-            <textarea
+            <Textarea
               value={quickNoteText}
               onChange={(e) => setQuickNoteText(e.target.value)}
               placeholder="Type your note here..."
@@ -72,39 +76,37 @@ export function QuickNoteModal({ customerId, onClose }: QuickNoteModalProps) {
               disabled={isLoading}
             />
             <div className="flex justify-between items-center pt-2">
-              <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer ml-1">
-                <input 
-                  type="checkbox" 
+              <Label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer ml-1">
+                <Input
+                  type="checkbox"
                   checked={isImportant}
                   onChange={(e) => setIsImportant(e.target.checked)}
                   className="rounded border-gray-300 text-amber-500 focus:ring-amber-500 h-4 w-4"
                   disabled={isLoading}
                 />
                 Mark as important
-              </label>
+              </Label>
               <div className="flex gap-3">
-                <button
-                  type="button"
+                <Button
                   onClick={onClose}
                   className="px-4 py-2 bg-secondary text-secondary-foreground rounded-xl flex items-center justify-center hover:bg-secondary/80 transition-colors text-sm font-medium"
                   disabled={isLoading}
                 >
                   Cancel
-                </button>
-                <button 
+                </Button>
+                <Button
                   type="submit"
                   disabled={!quickNoteText.trim() || isLoading}
                   className="px-4 py-2 bg-primary text-primary-foreground rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors shadow-sm text-sm font-medium"
                 >
                   {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                   Save Note
-                </button>
+                </Button>
               </div>
             </div>
           </form>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

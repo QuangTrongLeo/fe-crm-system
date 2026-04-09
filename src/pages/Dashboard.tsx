@@ -3,6 +3,7 @@ import { RecentDealsTable } from "../components/dashboard/RecentDealsTable";
 import { DailyTasksList } from "../components/dashboard/DailyTasksList";
 import { FileDown, Plus, Sparkles, Filter } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
+import { Button } from "@/components/ui/button";
 
 export function Dashboard() {
   const { user } = useAuthStore();
@@ -43,18 +44,18 @@ export function Dashboard() {
         </div>
 
         <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right duration-1000">
-          <button className="flex items-center gap-2.5 px-6 py-4 bg-background/50 glass-card text-foreground/80 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-accent transition-all active:scale-[0.98]">
+          <Button className="flex items-center gap-2.5 px-6 py-4 bg-background/50 glass-card text-foreground/80 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-accent transition-all active:scale-[0.98]">
             <Filter className="w-4 h-4" />
             Filter
-          </button>
-          <button className="flex items-center gap-2.5 px-6 py-4 bg-background/50 glass-card text-foreground/80 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-accent transition-all active:scale-[0.98]">
+          </Button>
+          <Button className="flex items-center gap-2.5 px-6 py-4 bg-background/50 glass-card text-foreground/80 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-accent transition-all active:scale-[0.98]">
             <FileDown className="w-4 h-4" />
             Export
-          </button>
-          <button className="flex items-center gap-2.5 px-7 py-4 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-primary/90 transition-all active:scale-[0.98] shadow-2xl shadow-primary/30">
+          </Button>
+          <Button className="flex items-center gap-2.5 px-7 py-4 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-primary/90 transition-all active:scale-[0.98] shadow-2xl shadow-primary/30">
             <Plus className="w-4 h-4" />
             New Deal
-          </button>
+          </Button>
         </div>
       </div>
 

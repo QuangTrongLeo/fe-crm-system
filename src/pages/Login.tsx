@@ -13,6 +13,8 @@ import { login as loginApi } from "../services/api/auth.service";
 import loginBg from "../assets/login-bg.png";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { setCookie } from "@/lib/cookies";
+
 export function Login() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -34,8 +36,8 @@ export function Login() {
       const response = await loginApi({ email, password });
 
       login(response.user);
-      localStorage.setItem("accessToken", response.accessToken);
-      localStorage.setItem("refreshToken", response.refreshToken);
+      setCookie("access_token", response.accessToken, 7); // Set with 7 days expiry or as needed
+      setCookie("refresh_token", response.refreshToken, 7);
       localStorage.setItem("user", JSON.stringify(response.user));
 
       navigateAfter3s();

@@ -7,7 +7,7 @@ import {
 export const create_new_customer = async (
   data: CreateCustomerReqFormData,
 ): Promise<CustomerResponseFormData> => {
-  return await axiosInstance.post("/customers/create", data);
+  return await axiosInstance.post("/customers", data);
 };
 
 export const get_all_customer = async (): Promise<
@@ -34,3 +34,7 @@ export const search_customer = async (
 ): Promise<CustomerResponseFormData[]> => {
   return await axiosInstance.get(`/customers/search?keyword=${keyword}`);
 };
+
+export const delete_customer = async (id: string) => {
+  return await axiosInstance.delete(`/customers/${id}`);
+}

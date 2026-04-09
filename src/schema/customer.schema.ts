@@ -13,7 +13,7 @@ export const CustomerResponseSchema = z.object({
 
 export type CustomerResponseFormData = z.infer<typeof CustomerResponseSchema>;
 
-
+z
 export const CreateCustomerReqSchema = z.object({
     firstName: z.string(),
     lastName: z.string(),

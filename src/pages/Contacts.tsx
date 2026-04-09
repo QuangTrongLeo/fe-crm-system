@@ -1,12 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useCustomerStore } from "../store/useCustomerStore";
-import { Plus, Users, Search, Filter, Download } from "lucide-react";
+import { Plus, Users, Search, Filter, Download, X } from "lucide-react";
 
 import { ContactsTable } from "../components/contacts/ContactsTable";
 import { CustomerProfileModal } from "../components/contacts/CustomerProfileModal";
 import { QuickNoteModal } from "../components/contacts/QuickNoteModal";
 import { CreateCustomerModal } from "../components/contacts/CreateCustomerModal";
 import { get_all_customer } from "@/services/api/customer.service";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+} from "@/components/ui/dropdown-menu";
+import { CustomerStatus } from "@/lib/enum";
 
 export function Contacts() {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -14,20 +29,50 @@ export function Contacts() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [companyFilter, setCompanyFilter] = useState<string>("ALL");
+
   const customers = useCustomerStore((state: any) => state.customers);
   const setCustomers = useCustomerStore((state: any) => state.setCustomers);
 
   const selectedUser = customers.find((c: any) => c.id === selectedUserId);
 
+  // Dynamically extract unique companies from customer data
+  const companies = useMemo(() => {
+    const list = Array.from(new Set(customers.map((c: any) => c.company)))
+      .filter(Boolean)
+      .sort() as string[];
+    return list;
+  }, [customers]);
+
   const filteredCustomers = customers.filter((c: any) => {
     const searchLower = searchTerm.toLowerCase();
-    return (
+
+    // Status Filter
+    const matchesStatus = statusFilter === "ALL" || c.status === statusFilter;
+
+    // Company Filter
+    const matchesCompany =
+      companyFilter === "ALL" || c.company === companyFilter;
+
+    // Search Filter
+    const matchesSearch =
       c.firstName.toLowerCase().includes(searchLower) ||
       c.lastName.toLowerCase().includes(searchLower) ||
       c.email.toLowerCase().includes(searchLower) ||
-      c.company.toLowerCase().includes(searchLower)
-    );
+      c.company.toLowerCase().includes(searchLower);
+
+    return matchesStatus && matchesCompany && matchesSearch;
   });
+
+  const activeFilterCount =
+    (statusFilter !== "ALL" ? 1 : 0) + (companyFilter !== "ALL" ? 1 : 0);
+
+  const resetFilters = () => {
+    setStatusFilter("ALL");
+    setCompanyFilter("ALL");
+    setSearchTerm("");
+  };
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -65,13 +110,18 @@ export function Contacts() {
             <span className="text-blue-600">
               {customers.length.toLocaleString()} Active profiles
             </span>
+            {activeFilterCount > 0 && (
+              <span className="ml-2 text-slate-300">
+                • Filtering {filteredCustomers.length} results
+              </span>
+            )}
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="relative group hidden md:block">
             <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
-            <input
+            <Input
               type="text"
               placeholder="Search profiles..."
               value={searchTerm}
@@ -79,19 +129,109 @@ export function Contacts() {
               className="pl-11 pr-4 py-3.5 bg-white border border-gray-200 text-xs font-bold uppercase tracking-widest rounded-2xl outline-none focus:border-blue-500/50 transition-all w-64 shadow-sm"
             />
           </div>
-          <button className="p-3.5 bg-white border border-gray-200 text-slate-400 rounded-2xl hover:bg-slate-50 transition-all shadow-sm">
-            <Filter className="w-5 h-5" />
-          </button>
-          <button className="p-3.5 bg-white border border-gray-200 text-slate-400 rounded-2xl hover:bg-slate-50 transition-all shadow-sm">
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className={`p-3.5 h-auto rounded-2xl transition-all shadow-sm relative ${activeFilterCount > 0 ? "border-blue-200 bg-blue-50/50 text-blue-600" : "text-slate-400"}`}
+              >
+                <Filter className="w-5 h-5" />
+                {activeFilterCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-600 text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-white">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 rounded-2xl p-2 shadow-2xl border-none ring-1 ring-slate-200">
+              <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2 py-2">
+                Filter Results
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="text-xs font-bold py-2.5 rounded-xl">
+                  By Status
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="rounded-xl p-1">
+                  <DropdownMenuRadioGroup
+                    value={statusFilter}
+                    onValueChange={setStatusFilter}
+                  >
+                    <DropdownMenuRadioItem
+                      value="ALL"
+                      className="text-xs font-bold py-2 rounded-lg"
+                    >
+                      All Statuses
+                    </DropdownMenuRadioItem>
+                    {Object.values(CustomerStatus).map((status) => (
+                      <DropdownMenuRadioItem
+                        key={status}
+                        value={status}
+                        className="text-xs font-bold py-2 rounded-lg"
+                      >
+                        {status}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="text-xs font-bold py-2.5 rounded-xl">
+                  By Company
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="rounded-xl p-1 max-h-[300px] overflow-y-auto">
+                  <DropdownMenuRadioGroup
+                    value={companyFilter}
+                    onValueChange={setCompanyFilter}
+                  >
+                    <DropdownMenuRadioItem
+                      value="ALL"
+                      className="text-xs font-bold py-2 rounded-lg"
+                    >
+                      All Companies
+                    </DropdownMenuRadioItem>
+                    {companies.map((company) => (
+                      <DropdownMenuRadioItem
+                        key={company}
+                        value={company}
+                        className="text-xs font-bold py-2 rounded-lg"
+                      >
+                        {company}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+
+              {activeFilterCount > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <Button
+                    variant="ghost"
+                    onClick={resetFilters}
+                    className="w-full justify-start text-xs font-bold text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl mt-1 h-9 px-2"
+                  >
+                    <X className="w-3.5 h-3.5 mr-2" />
+                    Reset Filters
+                  </Button>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Button className="p-3.5 bg-white border border-gray-200 text-slate-400 rounded-2xl hover:bg-slate-50 transition-all shadow-sm">
             <Download className="w-5 h-5" />
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setIsCreateModalOpen(true)}
             className="px-6 py-3.5 bg-blue-600 text-white text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-blue-500 transition-all active:scale-[0.98] shadow-xl shadow-blue-600/20 flex items-center gap-3"
           >
             <Plus className="w-5 h-5" />
             Add Profile
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -120,7 +260,10 @@ export function Contacts() {
       )}
 
       {isCreateModalOpen && (
-        <CreateCustomerModal onClose={() => setIsCreateModalOpen(false)} />
+        <CreateCustomerModal
+          assignedUserId={customers.assignedUserId}
+          onClose={() => setIsCreateModalOpen(false)}
+        />
       )}
     </div>
   );

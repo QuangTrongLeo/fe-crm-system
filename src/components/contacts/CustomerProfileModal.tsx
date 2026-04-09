@@ -8,6 +8,7 @@ import { ProfileSidebar } from './profile/ProfileSidebar'
 import { DetailsTab } from './profile/DetailsTab'
 import { InteractionsTab } from './profile/InteractionsTab'
 import { NotesTab } from './profile/NotesTab'
+import { Button } from '../ui/button'
 
 interface CustomerProfileModalProps {
   customer: CustomerResponseFormData
@@ -51,14 +52,15 @@ export function CustomerProfileModal({ customer, onClose }: CustomerProfileModal
           
           {/* Header & Internal Navigation */}
           <div className="px-8 pt-8 border-b border-border/40 shrink-0">
-             <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
+             <div className="flex items-center justify-between mb-0">
+                <div className="flex items-center gap-2">
                   {TABS.map((tab) => (
-                    <button
+                    <Button
                       key={tab.id}
+                      variant="ghost"
                       onClick={() => setActiveTab(tab.id)}
                       className={cn(
-                        "pb-4 text-[10px] font-black uppercase tracking-[0.2em] relative transition-colors",
+                        "px-4 pb-4 h-auto rounded-none bg-transparent hover:bg-transparent text-[11px] font-black uppercase tracking-[0.2em] relative transition-all duration-300",
                         activeTab === tab.id ? "text-blue-600" : "text-slate-400 hover:text-slate-600"
                       )}
                     >
@@ -66,15 +68,17 @@ export function CustomerProfileModal({ customer, onClose }: CustomerProfileModal
                       {activeTab === tab.id && (
                         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 animate-in fade-in slide-in-from-bottom-1" />
                       )}
-                    </button>
+                    </Button>
                   ))}
                 </div>
-                <button 
+                <Button 
+                  variant="ghost"
+                  size="icon"
                   onClick={onClose}
-                  className="p-2 hover:bg-muted rounded-full text-muted-foreground transition-colors -mt-4 outline-none"
+                  className="rounded-full hover:bg-muted text-muted-foreground transition-all -mt-4 shadow-none"
                 >
                   <X className="w-5 h-5" />
-                </button>
+                </Button>
              </div>
           </div>
 
@@ -88,13 +92,13 @@ export function CustomerProfileModal({ customer, onClose }: CustomerProfileModal
           {/* Footer Actions */}
           <div className="px-8 py-6 border-t border-border/40 bg-muted/5 flex items-center justify-between shrink-0">
              <div className="flex items-center gap-4">
-                <button className="px-5 py-2.5 border border-border text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-background transition-all active:scale-[0.98]">
+                <Button variant="outline" className="h-auto px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all active:scale-[0.98]">
                    Export History
-                </button>
+                </Button>
              </div>
-             <button className="px-6 py-2.5 bg-foreground text-background text-[10px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-all active:scale-[0.98]">
+             <Button className="h-auto px-6 py-2.5 bg-foreground text-background text-[10px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-all active:scale-[0.98] shadow-lg">
                 Save Changes
-             </button>
+             </Button>
           </div>
         </div>
       </div>

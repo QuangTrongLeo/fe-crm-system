@@ -1,5 +1,6 @@
 import type { UserResponseSchema } from "@/schema/user.schema";
 import { create } from "zustand";
+import { removeCookie } from "@/lib/cookies";
 
 interface AuthStore {
   user: UserResponseSchema | null;
@@ -20,7 +21,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
   refreshToken: null,
 
   login: (user) => set({ user, isAuthenticated: true }),
-  logout: () => set({ user: null, isAuthenticated: false }),
+  logout: () => {
+    removeCookie("access_token");
+    removeCookie("refresh_token");
+    localStorage.removeItem("user");
+    set({ user: null, isAuthenticated: false, accessToken: null, refreshToken: null });
+  },
   setUser: (user) => set({ user }),
   setAccessToken: (accessToken) => set({ accessToken }),
   setRefreshToken: (refreshToken) => set({ refreshToken }),

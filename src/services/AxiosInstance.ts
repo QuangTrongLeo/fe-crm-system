@@ -1,6 +1,7 @@
-
 import type { ApiResponse } from '@/schema/api';
 import axios from 'axios'
+import { getCookie, removeCookie } from '@/lib/cookies';
+
 // define axiosInstance reuse for all api
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/crm-system/api',
@@ -13,7 +14,7 @@ const axiosInstance = axios.create({
 // Interceptor grant token if request authentication
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = getCookie('access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -46,7 +47,7 @@ axiosInstance.interceptors.response.use(
       switch (error.response.status) {
         case 401:
           console.warn('Unauthorized! Redirecting to login...')
-          localStorage.removeItem('accessToken')
+          removeCookie('access_token')
           localStorage.removeItem('user')
           break
       }

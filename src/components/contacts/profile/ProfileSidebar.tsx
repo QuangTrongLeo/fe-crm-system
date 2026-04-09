@@ -1,7 +1,11 @@
-import { X, Building2, Mail, Phone } from "lucide-react";
+import { useState } from "react";
+import { X, Mail } from "lucide-react";
 import type { CustomerResponseFormData } from "@/schema/customer.schema";
-import { cn } from "@/lib/utils";
-import { InfoItem } from "./InfoItem";
+import { Button } from "@/components/ui/button";
+
+// Sub-components
+import { DeleteAlter } from "./DeleteAlter";
+import { UpdateForm } from "./UpdateForm";
 
 interface ProfileSidebarProps {
   customer: CustomerResponseFormData;
@@ -14,59 +18,48 @@ export function ProfileSidebar({
   onClose,
   getInitials,
 }: ProfileSidebarProps) {
-  const isStatusActive = customer.status === "ACTIVE";
+  const [isEditing, setIsEditing] = useState(false);
 
   return (
-    <div className="w-full md:w-80 border-b md:border-b-0 md:border-r bg-muted/5 flex flex-col shrink-0">
+    <div className="w-full md:w-80 border-b md:border-b-0 md:border-r bg-muted/5 flex flex-col shrink-0 animate-in fade-in slide-in-from-left-4 duration-300">
+      {/* Visual Header Decoration */}
       <div className="h-24 bg-linear-to-br from-blue-500 to-indigo-600 relative shrink-0">
-        <button
+        <Button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 md:hidden backdrop-blur-md rounded-full text-white transition-colors z-10"
+          variant="ghost"
+          className="absolute top-4 right-4 p-2 h-auto bg-black/20 hover:bg-black/40 md:hidden backdrop-blur-md rounded-full text-white transition-all z-10"
         >
           <X className="w-4 h-4" />
-        </button>
+        </Button>
       </div>
 
-      <div className="px-6 pb-6 relative grow flex flex-col">
-        <div className="flex justify-between items-end mb-6">
-          <div className="w-20 h-20 rounded-2xl border-4 border-card -mt-10 bg-white dark:bg-slate-800 shadow-xl flex items-center justify-center text-2xl font-black text-blue-600">
+      <div className="px-6 pb-6 relative grow flex flex-col pt-0">
+        {/* Avatar Overlay */}
+        <div className="flex justify-between items-end mb-6 relative z-10">
+          <div className="w-20 h-20 rounded-2xl border-4 border-card -mt-10 bg-white dark:bg-slate-800 shadow-xl flex items-center justify-center text-2xl font-black text-blue-600 ring-4 ring-blue-500/5">
             {getInitials(customer.firstName, customer.lastName)}
           </div>
         </div>
 
-        <div className="space-y-1">
-          <h2 className="text-xl font-black tracking-tight text-foreground">
-            {customer.firstName} {customer.lastName}
-          </h2>
-          <div className="flex items-center gap-2">
-            <span
-              className={cn(
-                "inline-flex items-center px-2 py-0.5 rounded-full text-[9px] uppercase tracking-[0.2em] font-black border",
-                isStatusActive
-                  ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-                  : "bg-zinc-500/10 text-zinc-500 border-zinc-500/20",
-              )}
-            >
-              {customer.status}
-            </span>
-            <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">
-              ID: #{customer.id}
-            </span>
+        {/* Dynamic Information Area (Read / Edit Mode) */}
+        <UpdateForm
+          customer={customer}
+          isEditing={isEditing}
+          onCancel={() => setIsEditing(false)}
+          onSuccess={() => setIsEditing(false)}
+        />
+
+        {/* Global Action Area (Only visible when not editing) */}
+        {!isEditing && (
+          <div className="mt-8 pt-6 border-t border-border/50">
+            <DeleteAlter
+              userId={customer.id.toString()}
+              isEditing={isEditing}
+              onEdit={() => setIsEditing(true)}
+              onClose={onClose}
+            />
           </div>
-        </div>
-
-        <div className="mt-8 space-y-5">
-          <InfoItem icon={Building2} label="Company" value={customer.company} />
-          <InfoItem icon={Mail} label="Email" value={customer.email} />
-          <InfoItem icon={Phone} label="Phone" value={customer.phone} />
-        </div>
-
-        <div className="mt-auto pt-6 border-t border-border/50">
-          <button className="w-full flex items-center justify-center gap-2 py-3 bg-white text-blue-600 border border-blue-600/20 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-lg shadow-blue-600/5 group active:scale-[0.98]">
-            <Mail className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" />
-            Send Message
-          </button>
-        </div>
+        )}
       </div>
     </div>
   );
