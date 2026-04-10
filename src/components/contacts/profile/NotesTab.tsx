@@ -47,7 +47,6 @@ export function NotesTab({ customerId }: NotesTabProps) {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!noteContent.trim() || !user) {
-      if (!user) toast.error('You must be logged in to add notes')
       return
     }
 
@@ -59,14 +58,10 @@ export function NotesTab({ customerId }: NotesTabProps) {
         content: noteContent,
         isImportant: isImportant,
       };
-      console.log(req);
       await create_new_note(req)
       setNoteContent('')
       setIsImportant(false)
-      toast.success('Note added successfully')
       fetchNotes()
-    } catch (error) {
-      toast.error('Failed to add note')
     } finally {
       setIsCreating(false)
     }

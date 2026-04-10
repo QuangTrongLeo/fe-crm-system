@@ -16,7 +16,6 @@ import {
   delete_customer,
 } from "@/services/api/customer.service";
 import { useCustomerStore } from "@/store/useCustomerStore";
-import { toast } from "sonner";
 
 interface DeleteAlterProps {
   userId: string;
@@ -34,18 +33,12 @@ export const DeleteAlter = ({
   const { setCustomers, setSelectCustomer } = useCustomerStore();
 
   const handleDelete = async () => {
-    try {
-      await delete_customer(userId);
+    await delete_customer(userId);
 
-      const allCustomers = await get_all_customer();
-      setCustomers(allCustomers);
-      setSelectCustomer(null);
-      onClose();
-
-      toast.success("Customer deleted successfully");
-    } catch (error) {
-      toast.error("Failed to delete customer");
-    }
+    const allCustomers = await get_all_customer();
+    setCustomers(allCustomers);
+    setSelectCustomer(null);
+    onClose();
   };
 
   // hide buttons while editing

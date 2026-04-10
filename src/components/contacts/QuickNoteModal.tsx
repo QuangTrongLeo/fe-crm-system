@@ -2,7 +2,6 @@ import { useState } from "react";
 import { X, MessageSquarePlus, Loader2 } from "lucide-react";
 import { create_new_note } from "@/services/api/note.service";
 import { useAuthStore } from "../../store/useAuthStore";
-import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Input } from "../ui/input";
@@ -23,7 +22,6 @@ export function QuickNoteModal({ customerId, onClose }: QuickNoteModalProps) {
     e.preventDefault();
     if (!quickNoteText.trim()) return;
     if (!user) {
-      toast.error("You must be logged in to add notes");
       return;
     }
 

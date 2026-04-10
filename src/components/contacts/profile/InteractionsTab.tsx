@@ -6,7 +6,6 @@ import {
 } from "@/services/api/interaction.service";
 import { useInteractionStore } from "@/store/useInteractionStore";
 import { useAuthStore } from "@/store/useAuthStore";
-import { toast } from "sonner";
 import type { InteractionResponseFormData } from "@/schema/interaction.schema";
 import { InteractionItem } from "./InteractionItem";
 import { Button } from "@/components/ui/button";
@@ -55,7 +54,6 @@ export function InteractionsTab({ customerId }: InteractionsTabProps) {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!interactionSummary.trim() || !user) {
-      if (!user) toast.error("You must be logged in to log interactions");
       return;
     }
 
@@ -69,10 +67,7 @@ export function InteractionsTab({ customerId }: InteractionsTabProps) {
         summary: interactionSummary,
       });
       setInteractionSummary("");
-      toast.success("Interaction logged");
       fetchInteractions();
-    } catch (error) {
-      toast.error("Failed to log interaction");
     } finally {
       setIsCreating(false);
     }

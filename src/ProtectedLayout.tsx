@@ -3,6 +3,7 @@ import { Layout } from "./components/Layout";
 import { getCookie } from "./lib/cookies";
 
 export default function ProtectedLayout() {
+  
   const accessToken = getCookie("access_token");
 
   if (!accessToken) {

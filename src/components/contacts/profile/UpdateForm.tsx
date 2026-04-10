@@ -6,7 +6,6 @@ import {
   get_all_customer,
 } from "@/services/api/customer.service";
 import { useCustomerStore } from "@/store/useCustomerStore";
-import { toast } from "sonner";
 import {
   Select,
   SelectContent,

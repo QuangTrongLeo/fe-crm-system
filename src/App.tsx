@@ -20,8 +20,6 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* Public Routes */}
         <Route path="/login" element={<Login />} />
 
         <Route element={<ProtectedLayout />}>
