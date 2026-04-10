@@ -22,35 +22,26 @@ export function Login() {
   const [password, setPassword] = useState("");
 
   const checkEmailExist = async () => {
-    try {
-      const isExists = await checkEmail(email);
-      if (isExists) {
-        setEmail(email);
-      }
-    } catch (error) {
+    const isExists = await checkEmail(email);
+    if (isExists) {
+      setEmail(email);
     }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    const response = await loginApi({ email, password });
 
-    try {
-      const response = await loginApi({ email, password });
+    login(response.user);
+    setCookie("access_token", response.accessToken, 7);
+    setCookie("refresh_token", response.refreshToken, 7);
+    localStorage.setItem("user", JSON.stringify(response.user));
 
-      login(response.user);
-      setCookie("access_token", response.accessToken, 7);
-      setCookie("refresh_token", response.refreshToken, 7);
-      localStorage.setItem("user", JSON.stringify(response.user));
-
-      setTimeout(() => {
-        navigate("/");
-      }, 1000);
-    } catch (error) {
-      // Errors are handled by AxiosInstance
-    } finally {
-      setIsLoading(false);
-    }
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
+    setIsLoading(false);
   };
 
   return (
