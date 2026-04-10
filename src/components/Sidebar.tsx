@@ -7,7 +7,6 @@ import {
   CheckSquare,
   BarChart3,
   Settings,
-  Plus,
   LogOut,
   User,
 } from "lucide-react";
@@ -21,7 +20,6 @@ import {
   SidebarMenuItem,
   SidebarGroup,
   SidebarGroupLabel,
-  SidebarGroupContent,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import {
@@ -76,15 +74,6 @@ export function Sidebar() {
 
       <SidebarContent className="px-4">
         <SidebarGroup>
-          <SidebarGroupContent className="mb-4">
-            <button className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-primary/10 hover:bg-primary/20 text-primary font-semibold rounded-xl border border-primary/20 transition-all active:scale-[0.98] group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:justify-center">
-              <Plus className="w-4 h-4 text-primary group-hover:rotate-90 transition-transform duration-300" />
-              <span className="group-data-[collapsible=icon]:hidden">
-                Quick Action
-              </span>
-            </button>
-          </SidebarGroupContent>
-
           <SidebarGroupLabel className="px-2 mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground group-data-[collapsible=icon]:hidden">
             Main Menu
           </SidebarGroupLabel>

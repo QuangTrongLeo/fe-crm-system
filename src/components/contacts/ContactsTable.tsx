@@ -76,8 +76,8 @@ export function ContactsTable({
     },
 
     {
-      accessorKey: "contact",
-      header: "Contact",
+      accessorKey: "Email",
+      header: "Email",
       cell: ({ row }) => {
         const customer = row.original;
         return (

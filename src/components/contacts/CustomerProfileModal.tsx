@@ -88,18 +88,6 @@ export function CustomerProfileModal({ customer, onClose }: CustomerProfileModal
              {activeTab === 'interactions' && <InteractionsTab customerId={customer.id} />}
              {activeTab === 'notes' && <NotesTab customerId={customer.id} />}
           </div>
-
-          {/* Footer Actions */}
-          <div className="px-8 py-6 border-t border-border/40 bg-muted/5 flex items-center justify-between shrink-0">
-             <div className="flex items-center gap-4">
-                <Button variant="outline" className="h-auto px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all active:scale-[0.98]">
-                   Export History
-                </Button>
-             </div>
-             <Button className="h-auto px-6 py-2.5 bg-foreground text-background text-[10px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-all active:scale-[0.98] shadow-lg">
-                Save Changes
-             </Button>
-          </div>
         </div>
       </div>
     </div>

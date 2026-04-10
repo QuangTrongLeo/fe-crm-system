@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Mail } from "lucide-react";
+import { X } from "lucide-react";
 import type { CustomerResponseFormData } from "@/schema/customer.schema";
 import { Button } from "@/components/ui/button";
 

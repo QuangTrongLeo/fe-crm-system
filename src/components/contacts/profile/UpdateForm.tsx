@@ -46,7 +46,6 @@ export const UpdateForm = ({
 
   const isStatusActive = formData.status === "ACTIVE";
 
-  // Reset form when editing is cancelled or customer changes
   useEffect(() => {
     setFormData(customer);
   }, [customer, isEditing]);
@@ -63,10 +62,8 @@ export const UpdateForm = ({
       setCustomers(allCustomers);
       setSelectCustomer(updatedCustomer);
 
-      toast.success("Customer updated successfully");
       onSuccess();
     } catch (error) {
-      toast.error("Failed to update customer");
     } finally {
       setIsLoading(false);
     }

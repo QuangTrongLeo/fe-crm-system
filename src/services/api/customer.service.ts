@@ -38,3 +38,6 @@ export const search_customer = async (
 export const delete_customer = async (id: string) => {
   return await axiosInstance.delete(`/customers/${id}`);
 }
+export const check_email_customer = async (email: string) => {
+  return await axiosInstance.post("/customers/check-email", { email });
+}

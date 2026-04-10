@@ -4,8 +4,8 @@ import { useCustomerStore } from "../../store/useCustomerStore";
 import {
   create_new_customer,
   get_all_customer,
+  check_email_customer,
 } from "@/services/api/customer.service";
-import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Input } from "../ui/input";
@@ -26,6 +26,7 @@ export function CreateCustomerModal({
 }) {
   const setCustomers = useCustomerStore((state) => state.setCustomers);
   const [isLoading, setIsLoading] = useState(false);
+  const [isEmailExist, setIsEmailExist] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -34,6 +35,14 @@ export function CreateCustomerModal({
     company: "",
     status: "ACTIVE",
   });
+
+  const checkEmail = async () => {
+    if (!formData.email) return;
+    const checked = await check_email_customer(formData.email);
+    if (checked) {
+      setIsEmailExist(true);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,12 +62,9 @@ export function CreateCustomerModal({
       await create_new_customer(data);
       const allCustomers = await get_all_customer();
       setCustomers(allCustomers);
-
-      toast.success("Customer created successfully");
       onClose();
     } catch (error) {
       console.error("Failed to create customer:", error);
-      toast.error("Failed to create customer");
     } finally {
       setIsLoading(false);
     }
@@ -90,7 +96,7 @@ export function CreateCustomerModal({
                 <Label className="text-sm font-medium tracking-wide">
                   First Name <span className="text-red-500">*</span>
                 </Label>
-                <input
+                <Input
                   required
                   type="text"
                   placeholder="John"
@@ -121,6 +127,9 @@ export function CreateCustomerModal({
               <Label className="text-sm font-medium tracking-wide">
                 Email <span className="text-red-500">*</span>
               </Label>
+              {isEmailExist && (
+                <p className="text-red-500 text-sm">Email already exists</p>
+              )}
               <Input
                 required
                 type="email"
@@ -129,6 +138,7 @@ export function CreateCustomerModal({
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
+                onBlur={checkEmail}
                 className="w-full px-3 py-2 border bg-secondary/50 rounded-xl focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm transition-all text-foreground"
               />
             </div>
@@ -139,7 +149,7 @@ export function CreateCustomerModal({
                 </Label>
                 <Input
                   type="text"
-                  placeholder="+1 (555) 000-0000"
+                  placeholder="+84 123 456 789"
                   value={formData.phone}
                   onChange={(e) =>
                     setFormData({ ...formData, phone: e.target.value })

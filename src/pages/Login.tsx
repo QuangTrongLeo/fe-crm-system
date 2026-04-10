@@ -12,7 +12,6 @@ import { useAuthStore } from "../store/useAuthStore";
 import { checkEmail, login as loginApi } from "../services/api/auth.service";
 import loginBg from "../assets/login-bg.png";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { setCookie } from "@/lib/cookies";
 
 export function Login() {
@@ -24,23 +23,14 @@ export function Login() {
 
   const checkEmailExist = async () => {
     try {
-      const response = await checkEmail(email);
-      if (response) {
-        toast.error("Email already exists");
-      }
-      else {
+      const isExists = await checkEmail(email);
+      if (isExists) {
         setEmail(email);
       }
     } catch (error) {
-      toast.error("Failed to check email");
     }
-  }
-  const navigateAfter3s = () => {
-    setTimeout(() => {
-      toast.success("Login successful");
-      navigate("/");
-    }, 1000);
   };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -49,13 +39,15 @@ export function Login() {
       const response = await loginApi({ email, password });
 
       login(response.user);
-      setCookie("access_token", response.accessToken, 7); // Set with 7 days expiry or as needed
+      setCookie("access_token", response.accessToken, 7);
       setCookie("refresh_token", response.refreshToken, 7);
       localStorage.setItem("user", JSON.stringify(response.user));
 
-      navigateAfter3s();
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
     } catch (error) {
-      toast.error("Login failed. Please check your credentials.");
+      // Errors are handled by AxiosInstance
     } finally {
       setIsLoading(false);
     }
@@ -114,6 +106,7 @@ export function Login() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onBlur={checkEmailExist}
                   placeholder="Enter your email"
                   className="w-full pl-12 pr-4 py-4.5 bg-white/3 border border-gray-600 hover:border-white/20 outline-none focus:border-blue-500/50 focus:bg-white/6 focus:ring-4 focus:ring-blue-500/10 rounded-2xl transition-all font-semibold text-white placeholder:text-slate-600"
                   required

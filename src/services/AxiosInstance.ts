@@ -1,6 +1,7 @@
 import type { ApiResponse } from "@/schema/api";
 import axios from "axios";
 import { getCookie } from "@/lib/cookies";
+import { toast } from "sonner";
 
 const axiosInstance = axios.create({
   baseURL:
@@ -29,10 +30,16 @@ axiosInstance.interceptors.response.use(
     const apiResponse = response.data as ApiResponse<any>;
 
     const isSuccess = apiResponse.code >= 200 && apiResponse.code < 300;
+    const method = response.config.method?.toLowerCase();
 
     if (isSuccess) {
+      if (method !== "get" && apiResponse.message) {
+        toast.success(apiResponse.message);
+      }
       return apiResponse.data;
     } else {
+
+      toast.error(apiResponse.message);
       return Promise.reject({
         isApiError: true,
         code: apiResponse.code,
@@ -58,6 +65,7 @@ axiosInstance.interceptors.response.use(
         error.message ||
         "Something went wrong. Please try again later.",
     };
+    toast.error(errorResponse.message);
     return Promise.reject(errorResponse);
   },
 );
