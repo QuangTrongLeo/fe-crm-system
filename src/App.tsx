@@ -7,6 +7,7 @@ import { Settings } from './pages/Settings'
 import { Reports } from './pages/Reports'
 import { Tasks } from './pages/Tasks'
 import { Deals } from './pages/Deals'
+import { Register } from './pages/Register'
 import ProtectedLayout from './ProtectedLayout'
 import { useThemeStore } from './store/useThemeStore'
 
@@ -21,6 +22,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         <Route element={<ProtectedLayout />}>
           <Route path="/" element={<Dashboard />} />

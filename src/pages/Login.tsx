@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   BarChart3,
   Mail,
@@ -186,12 +186,12 @@ export function Login() {
         <div className="mt-8 flex flex-col items-center gap-4 text-center">
           <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
             Don't have an account?{" "}
-            <a
-              href="#"
+            <Link
+              to="/register"
               className="text-blue-500 hover:text-blue-400 transition-colors ml-1 underline decoration-blue-500/30 underline-offset-4"
             >
-              Request Access
-            </a>
+              Create Account
+            </Link>
           </p>
 
           <div className="flex items-center gap-6 mt-2">
