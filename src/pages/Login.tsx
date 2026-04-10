@@ -9,7 +9,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
-import { login as loginApi } from "../services/api/auth.service";
+import { checkEmail, login as loginApi } from "../services/api/auth.service";
 import loginBg from "../assets/login-bg.png";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -22,6 +22,19 @@ export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const checkEmailExist = async () => {
+    try {
+      const response = await checkEmail(email);
+      if (response) {
+        toast.error("Email already exists");
+      }
+      else {
+        setEmail(email);
+      }
+    } catch (error) {
+      toast.error("Failed to check email");
+    }
+  }
   const navigateAfter3s = () => {
     setTimeout(() => {
       toast.success("Login successful");

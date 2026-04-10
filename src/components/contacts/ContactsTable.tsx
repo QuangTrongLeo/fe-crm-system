@@ -46,8 +46,8 @@ export function ContactsTable({
 }: ContactsTableProps) {
   const columns: ColumnDef<CustomerResponseFormData>[] = [
     {
-      accessorKey: "name",
-      header: "Name",
+      accessorKey: "fullName",
+      header: "Full Name",
       cell: ({ row }) => {
         const customer = row.original;
         return (
@@ -55,9 +55,36 @@ export function ContactsTable({
             <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
               {customer.firstName} {customer.lastName}
             </span>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
-              <Building2 className="w-3 h-3" />
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "company",
+      header: "Company",
+      cell: ({ row }) => {
+        const customer = row.original;
+        return (
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Building2 className="w-3.5 h-3.5 text-muted-foreground" />
               {customer.company}
+            </div>
+          </div>
+        );
+      },
+    },
+
+    {
+      accessorKey: "contact",
+      header: "Contact",
+      cell: ({ row }) => {
+        const customer = row.original;
+        return (
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Mail className="w-3.5 h-3.5 text-muted-foreground" />
+              {customer.email}
             </div>
           </div>
         );
@@ -70,10 +97,6 @@ export function ContactsTable({
         const customer = row.original;
         return (
           <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2 text-sm text-foreground/80">
-              <Mail className="w-3.5 h-3.5 text-muted-foreground" />
-              {customer.email}
-            </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Phone className="w-3.5 h-3.5 text-muted-foreground" />
               {customer.phone}
@@ -81,15 +104,6 @@ export function ContactsTable({
           </div>
         );
       },
-    },
-    {
-      accessorKey: "lastInteraction",
-      header: "Last Interaction",
-      cell: () => (
-        <span className="text-xs text-muted-foreground italic">
-          No recent activity
-        </span>
-      ),
     },
     {
       accessorKey: "status",
@@ -219,7 +233,7 @@ export function ContactsTable({
                 className="h-32 text-center text-muted-foreground"
               >
                 <div className="flex flex-col items-center gap-2">
-                  <p className="text-lg font-medium">No contacts found</p>
+                  <p className="text-lg font-medium">No Customers found</p>
                   <p className="text-sm">
                     Start by adding a new customer to your list.
                   </p>

@@ -78,9 +78,9 @@ export function CreateCustomerModal({
           </h3>
           <Button
             onClick={onClose}
-            className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors"
+            className="p-1 w-8 h-8 hover:bg-secondary rounded-md text-muted-foreground transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 text-white" />
           </Button>
         </div>
         <div className="p-6 bg-background">

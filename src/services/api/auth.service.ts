@@ -13,3 +13,7 @@ export const register = async (
 ): Promise<boolean> => {
   return await axiosInstance.post("/auth/register", data);
 };
+
+export const checkEmail = async (email: string): Promise<boolean> => {
+  return await axiosInstance.post(`/users/check-email`, { email });
+};

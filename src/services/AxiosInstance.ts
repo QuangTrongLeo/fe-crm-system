@@ -1,44 +1,43 @@
-import type { ApiResponse } from '@/schema/api';
-import axios from 'axios'
-import { getCookie, removeCookie } from '@/lib/cookies';
+import type { ApiResponse } from "@/schema/api";
+import axios from "axios";
+import { getCookie } from "@/lib/cookies";
 
-// define axiosInstance reuse for all api
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/crm-system/api',
+  baseURL:
+    import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/crm-system/api",
   timeout: 5000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
-})
+});
 
-// Interceptor grant token if request authentication
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = getCookie('access_token');
+    const token = getCookie("access_token");
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    return config
+    return config;
   },
   (error) => {
-    return Promise.reject(error)
-  }
-)
-//
+    return Promise.reject(error);
+  },
+);
+
 axiosInstance.interceptors.response.use(
   (response) => {
-    const apiResponse = response.data as ApiResponse<any>
+    const apiResponse = response.data as ApiResponse<any>;
 
-    const isSuccess = apiResponse.code >= 200 && apiResponse.code < 300
+    const isSuccess = apiResponse.code >= 200 && apiResponse.code < 300;
 
     if (isSuccess) {
-      return apiResponse.data
+      return apiResponse.data;
     } else {
       return Promise.reject({
         isApiError: true,
         code: apiResponse.code,
         message: apiResponse.message,
-      })
+      });
     }
   },
 
@@ -46,10 +45,8 @@ axiosInstance.interceptors.response.use(
     if (error.response) {
       switch (error.response.status) {
         case 401:
-          console.warn('Unauthorized! Redirecting to login...')
-          removeCookie('access_token')
-          localStorage.removeItem('user')
-          break
+          console.warn("Unauthorized! Redirecting to login...");
+          break;
       }
     }
 
@@ -57,9 +54,11 @@ axiosInstance.interceptors.response.use(
       isApiError: true,
       code: error.response?.status || 500,
       message:
-        error.response?.data?.message || error.message || 'Đã có lỗi xảy ra.',
-    }
-    return Promise.reject(errorResponse)
-  }
-)
-export default axiosInstance
+        error.response?.data?.message ||
+        error.message ||
+        "Something went wrong. Please try again later.",
+    };
+    return Promise.reject(errorResponse);
+  },
+);
+export default axiosInstance;
